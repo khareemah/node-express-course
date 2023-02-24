@@ -6,11 +6,16 @@ const app = express();
 
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
+const mainRouter = require('./routes/main');
 
 // middleware
 app.use(express.static('./public'));
 app.use(express.json());
 
+// "http-status-codes": "^2.1.4",
+// "jsonwebtoken": "^8.5.1",
+
+app.use('/api/v1', mainRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
