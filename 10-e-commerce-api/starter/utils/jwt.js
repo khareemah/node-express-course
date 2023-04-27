@@ -14,7 +14,7 @@ const attachCookiesToResponse = ({ res, user }) => {
   // one day in milliseconds
   const oneDay = 24 * 60 * 60 * 1000;
   res.cookie('token', token, {
-    httpsOnly: true,
+    httpOnly: true,
     expires: new Date(Date.now() + oneDay),
     secure: process.env.NODE_ENV === 'production',
     signed: true,

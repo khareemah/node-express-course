@@ -41,6 +41,7 @@ const deleteProduct = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: 'Success! product removed' });
 };
 const uploadImage = async (req, res) => {
+  console.log(req.files);
   res.send('uploadImage');
 };
 module.exports = {
