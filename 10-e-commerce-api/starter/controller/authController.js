@@ -9,15 +9,16 @@ const register = async (req, res) => {
   if (emailAlreadyExist) {
     throw new BadRequestError('email already exist');
   }
-
   // setup first user as admin
   const isFirstAccount = (await User.countDocuments({})) === 0;
+  console.log(isFirstAccount);
   const role = isFirstAccount ? 'admin' : 'user';
   const user = await User.create({ name, email, password, role });
   const tokenUser = createTokenUser(user);
   attachCookiesToResponse({ res, user: tokenUser });
   res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -37,12 +38,13 @@ const login = async (req, res) => {
   attachCookiesToResponse({ res, user: tokenUser });
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
+
 const logout = async (req, res) => {
   res.cookie('token', 'logout', {
     httpOnly: true,
     expires: new Date(Date.now()),
   });
-  res.status(StatusCodes.OK).send('logged out!!');
+  res.status(StatusCodes.OK).send('user logged out!!');
 };
 
 module.exports = { register, login, logout };

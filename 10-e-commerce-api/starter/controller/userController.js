@@ -4,7 +4,6 @@ const {
   BadRequestError,
   UnauthenticatedError,
 } = require('../errors');
-const { findOne } = require('../models/User');
 const User = require('../models/User');
 const {
   createTokenUser,
@@ -14,7 +13,7 @@ const {
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: 'user' }).select('-password');
-  res.status(StatusCodes.OK).json({ users });
+  res.status(StatusCodes.OK).json({ count: users.length, users });
 };
 
 const getSingleUser = async (req, res) => {
@@ -30,6 +29,23 @@ const getSingleUser = async (req, res) => {
 const showCurrentUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user: req.user });
 };
+
+// update user with findOneAndUpdate
+// const updateUser = async (req, res) => {
+//   const { name, email } = req.body;
+//   const { userId } = req.user;
+//   if (!email || !name) {
+//     throw new BadRequestError('Please provide name and email');
+//   }
+//   const user = await User.findOneAndUpdate(
+//     { _id: userId },
+//     { name, email },
+//     { new: true, runValidators: true }
+//   );
+//   const tokenUser = createTokenUser(user);
+//   attachCookiesToResponse({ res, user: tokenUser });
+//   res.status(StatusCodes.OK).json({ user: tokenUser });
+// };
 
 // update user with user.save()
 const updateUser = async (req, res) => {
@@ -53,8 +69,7 @@ const updateUserPassword = async (req, res) => {
     throw new BadRequestError('please provide old password and new password');
   }
 
-  const { userId } = req.user;
-  const user = await User.findOne({ _id: userId });
+  const user = await User.findOne({ _id: req.user.userId });
   const isPasswordCorrect = await user.comparePassword(oldPassword);
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError('Invalid Credentials');
@@ -71,20 +86,3 @@ module.exports = {
   updateUser,
   updateUserPassword,
 };
-
-// update user with findOneAndUpdate
-// const updateUser = async (req, res) => {
-//   const { name, email } = req.body;
-//   const { userId } = req.user;
-//   if (!email || !name) {
-//     throw new BadRequestError('Please provide name and email');
-//   }
-//   const user = await User.findOneAndUpdate(
-//     { _id: userId },
-//     { name, email },
-//     { new: true, runValidators: true }
-//   );
-//   const tokenUser = createTokenUser(user);
-//   attachCookiesToResponse({ res, user: tokenUser });
-//   res.status(StatusCodes.OK).json({ user: tokenUser });
-// };
